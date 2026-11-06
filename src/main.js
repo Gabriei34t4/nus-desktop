@@ -1279,7 +1279,7 @@ const handlers = {
   // has to find the overlay's gear icon to get the overlay working.
   'companion:ai:status': () => {
     const s = require('../companion/src/store').getSettings();
-    return { provider: s.provider, keys: Object.fromEntries(['gemini', 'nvidia', 'freellmapi'].map((p) => [p, Boolean(s.apiKeys && s.apiKeys[p])])) };
+    return { provider: s.provider, baseURL: s.baseURL, keys: Object.fromEntries(['gemini', 'nvidia', 'freellmapi'].map((p) => [p, Boolean(s.apiKeys && s.apiKeys[p])])) };
   },
   'companion:ai:set-key': (_event, payload) => {
     const companionStore = require('../companion/src/store');

@@ -905,6 +905,7 @@ async function renderCompanionAiState(){
   const active=status?.provider||'gemini';provider.value=active;
   const names={gemini:'Google AI Studio',nvidia:'NVIDIA',freellmapi:'FreeLLMAPI'};
   const has=Boolean(status?.keys?.[active]);
+  $('#companion-ai-base-url').value=status?.baseURL||'http://localhost:3001/v1';
   badge.textContent=has?'Chave salva':'Sem chave';badge.classList.toggle('good',has);
   $('#companion-ai-title').textContent=has?'Conectado: '+(names[active]||active):'Configure a IA do Companion';
   $('#companion-ai-url-field').classList.toggle('hidden',active!=='freellmapi');

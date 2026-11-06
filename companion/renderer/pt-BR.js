@@ -36,3 +36,16 @@ function tr(node){const raw=node.nodeValue;if(!raw||!raw.trim())return;const lea
 function walk(el){for(const a of ['placeholder','title','aria-label']){const v=el.getAttribute&&el.getAttribute(a);if(v&&dict[v])el.setAttribute(a,dict[v]);}for(const n of el.childNodes||[]){if(n.nodeType===3)tr(n);else if(n.nodeType===1)walk(n);}}
 walk(document.body);new MutationObserver(ms=>{for(const m of ms){if(m.type==='characterData')tr(m.target);for(const n of m.addedNodes||[])if(n.nodeType===3)tr(n);else if(n.nodeType===1)walk(n);}}).observe(document.body,{subtree:true,childList:true,characterData:true});
 })();
+(() => {
+const dict={
+'Off by default. On: your courses, tasks, and deadlines ride along to your chosen AI provider so answers can reference them. Off: the "What should I do?" tile still works fully on this machine.':'Desativado por padrão. Quando ativado, suas matérias, tarefas e prazos são enviados ao provedor de IA escolhido para contextualizar as respostas. Quando desativado, a função "O que devo fazer?" continua funcionando localmente.',
+'Off by default. Saves finished answers to a local file the Nūs desktop app reads. Stays on this machine.':'Desativado por padrão. Salva as respostas concluídas em um arquivo local lido pelo aplicativo Nūs. Os dados permanecem neste computador.',
+'On by default. Every capture session lands in the desktop app, searchable and uploadable to your Jarvis vault from the Knot section.':'Ativado por padrão. As sessões ficam disponíveis no aplicativo para pesquisa e envio ao seu cofre pela seção Knot.',
+'Off by default. Retains voice-activated WAV audio per session for 30 days. Audio is the storage-heavy part.':'Desativado por padrão. Mantém os arquivos de áudio WAV de cada sessão por 30 dias. Os áudios ocupam mais espaço.',
+'Off by default. Hiding the overlay (Ctrl+Shift+Space) also hides the tray icon: no on-screen sign of the Companion, and capture keeps running. Bring it back from the Companion pane in the desktop app. You are responsible for recording consent where you meet.':'Desativado por padrão. Ocultar a janela (Ctrl+Shift+Space) também esconde o ícone da bandeja: o Companion não aparece na tela, mas a captura continua ativa. Restaure-o pelo painel do Companion no aplicativo. Você é responsável por obter o consentimento para gravações quando necessário.',
+'Packs are built by the vault: python scripts/build_briefing.py <slug>. Turn Speak replies OFF before a real call.':'Os materiais são gerados pelo cofre com o comando python scripts/build_briefing.py <slug>. Desative a leitura das respostas antes de uma chamada real.'
+};
+function tr(n){const raw=n.nodeValue;if(!raw||!raw.trim())return;const lead=raw.match(/^\s*/)[0],tail=raw.match(/\s*$/)[0],key=raw.trim();if(dict[key])n.nodeValue=lead+dict[key]+tail;}
+function walk(el){for(const a of ['placeholder','title','aria-label']){const v=el.getAttribute&&el.getAttribute(a);if(v&&dict[v])el.setAttribute(a,dict[v]);}for(const n of el.childNodes||[]){if(n.nodeType===3)tr(n);else if(n.nodeType===1)walk(n);}}
+walk(document.body);new MutationObserver(ms=>{for(const m of ms){if(m.type==='characterData')tr(m.target);for(const n of m.addedNodes||[])if(n.nodeType===3)tr(n);else if(n.nodeType===1)walk(n);}}).observe(document.body,{subtree:true,childList:true,characterData:true});
+})();
