@@ -532,7 +532,7 @@ async function importSyllabusFlow(givenPath){
   const result=await api.syllabusImport(filePath);
   if(!result||result.canceled)return;
   if(result.remaining&&result.remaining.length)state.importQueue=[...(state.importQueue||[]),...result.remaining];
-  if(result.error==='no_ai'||result.error==='cli_not_logged_in'){state.importQueue=[];state.pendingSourceId=result.sourceId||null;showToast(aiError(result.error));setView('settings');return;}
+  if(result.error==='no_ai'){state.importQueue=[];state.pendingSourceId=result.sourceId||null;showToast(aiError(result.error));setView('settings');return;}
   if(result.error){reportAiError(result);nextQueuedImport();return;}
   openReview(result.data,result.fileName,result.sourceId);
 }
@@ -2200,7 +2200,7 @@ async function submitToNus(text){
   state.busy=true;renderHero();
   try{
     const result=await api.assistantParse(text);
-    if(result.error==='no_ai'||result.error==='cli_not_logged_in'){answerLocally(text);showToast(aiError(result.error));return;}
+    if(result.error==='no_ai'){answerLocally(text);showToast(aiError(result.error));return;}
     if(result.error){reportAiError(result);return;}
     const proposal=result.proposal;
     if(!proposal.needs_confirm){await answerWithAi(proposal.command.question||text,askAnswer);return;}

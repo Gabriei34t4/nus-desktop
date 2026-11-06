@@ -50,6 +50,12 @@ test('API keys are stored separately for each provider and can be cleared', () =
   assert.equal(secrets.getSecret('ai_nvidia_api_key'), null);
 });
 
+test('legacy Anthropic API credentials are removed during migration', () => {
+  secrets.setSecret('anthropic_api_key', 'legacy-test-key');
+  ai.cleanupLegacySecrets();
+  assert.equal(secrets.getSecret('anthropic_api_key'), null);
+});
+
 test('syllabus JSON is parsed into a safe, bounded structure', () => {
   const result = ai.parseModelJson(JSON.stringify({
     course: { name: 'Matemática', code: 'MAT10', credit_hours: 3, term: '2026' },

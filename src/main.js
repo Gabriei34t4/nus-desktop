@@ -715,6 +715,7 @@ app.whenReady().then(async () => {
   await open(path.join(app.getPath('userData'), 'data'));
   databaseReady = true;
   secrets.init(path.join(app.getPath('userData')));
+  ai.cleanupLegacySecrets();
   style.init(path.join(app.getPath('userData')));
   sttLocal.init({ userData: app.getPath('userData') });
   bridgeFile = path.join(app.getPath('userData'), 'context.json');

@@ -204,6 +204,11 @@ function load() {
     if (found) { data.packPath = found.pack; data.sparPath = found.spar; }
   }
 
+  // Remove legacy OpenAI/Anthropic credentials and model selections.
+  if (data.apiKeys.openai || data.apiKeys.anthropic || (data.models && (data.models.openai || data.models.anthropic))) migrated = true;
+  delete data.apiKeys.openai; delete data.apiKeys.anthropic;
+  if (data.models) { delete data.models.openai; delete data.models.anthropic; }
+
   // Migrate selections from unsupported providers to a supported provider.
   const validProviders = ['gemini', 'nvidia', 'freellmapi'];
   if (!validProviders.includes(data.provider)) data.provider = validProviders.find(p => data.apiKeys[p]) || 'gemini';
