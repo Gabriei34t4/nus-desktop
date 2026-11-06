@@ -5,3 +5,51 @@ function translateElement(el){for(const a of ['placeholder','title','aria-label'
 function run(){document.documentElement.lang='pt-BR';translateElement(document.body);}
 run();new MutationObserver(ms=>{for(const m of ms){if(m.type==='characterData')translateText(m.target);for(const n of m.addedNodes||[])if(n.nodeType===3)translateText(n);else if(n.nodeType===1)translateElement(n);}}).observe(document.body,{subtree:true,childList:true,characterData:true});
 })();
+(() => {
+const dict={
+'Checking':'Verificando','Local':'Local','Ready':'Pronto','Not set':'Não configurado',
+'Plan':'Plano','Nūs Free':'Nūs gratuito','Checking your plan and local usage.':'Verificando seu plano e uso local.',
+'Upgrade to Pro':'Assinar Pro','Manage subscription':'Gerenciar assinatura','Refresh plan':'Atualizar plano',
+'Setup code':'Código de configuração','Have a setup code?':'Tem um código de configuração?',
+'If the download page showed you a short code, paste it here. It only tells us which post or video Nūs came from: no identity, nothing about your courses. Completely optional.':'Se a página de download mostrou um código curto, cole-o aqui. Ele informa apenas de qual publicação ou vídeo você veio. Não identifica você nem revela suas matérias. É opcional.',
+'Apply':'Aplicar','Optional':'Opcional','Usage stats':'Estatísticas de uso',
+'Send anonymous usage stats':'Enviar estatísticas anônimas de uso',
+'Anonymous usage stats (which features get used, on a random install id) help us see what works. Your coursework and what you type stay on your device. Turn it off here.':'Estatísticas anônimas de uso (quais recursos são utilizados, associadas a um identificador aleatório) ajudam a melhorar o aplicativo. Suas matérias e o que você digita permanecem no dispositivo. Você pode desativar aqui.',
+'Anonymous usage stats are on':'As estatísticas anônimas estão ativadas','On':'Ativado',
+'Companion':'Companion','Checking shared context…':'Verificando contexto compartilhado…',
+'The overlay reads a minimal semester snapshot, never the database file.':'A janela flutuante lê apenas um resumo do semestre, nunca o arquivo do banco de dados.',
+'Visible, opt-in, revocable':'Visível, opcional e reversível',
+'Syncs the same bounded snapshot your Companion reads (next moves, courses, open tasks, automations). Not the full database. Off by default. Turn it on to keep your semester state across devices.':'Sincroniza o mesmo resumo limitado que o Companion consulta (próximas tarefas, matérias, tarefas abertas e automações). Não envia o banco de dados completo. Vem desativado por padrão.',
+'Cloud sync is off':'A sincronização na nuvem está desativada','Delete my cloud data':'Excluir meus dados da nuvem',
+'Walkthrough':'Tutorial','Replay the tour':'Repetir o tutorial',
+'Step through Nūs again with the Companion narrating alongside. Nothing you have imported is touched.':'Revise o Nūs com a narração do Companion. Nenhum arquivo importado será alterado.',
+'Replay the walkthrough':'Repetir apresentação','Anytime':'A qualquer momento',
+'GPA scale':'Escala de notas',"Your school's grading scale":'Escala de notas da sua escola',
+'Every school maps percentages to GPA differently. Verify this table against your syllabus or registrar. Nūs uses it for every projection and never guesses.':'Cada escola converte porcentagens em notas de forma diferente. Confira esta tabela no plano de ensino ou com a secretaria. O Nūs usa esses valores nos cálculos e não inventa notas.',
+'Preset…':'Predefinição…','Standard 4.0 with +/−':'Padrão 4,0 com +/−','Whole letters only':'Somente letras inteiras',
+'+ Add row':'+ Adicionar linha','Letter':'Nota','Min %':'Mínimo %','GPA points':'Pontos GPA','Save scale':'Salvar escala',
+'Storage':'Armazenamento','Measuring…':'Calculando…',
+'Sign in':'Entrar','Create account':'Criar conta','Continue with Google':'Continuar com Google','Sign out':'Sair',
+'Email':'E-mail','Password':'Senha','Manage plan':'Gerenciar plano',
+'Professor email':'E-mail para o professor','Course':'Matéria','Professor name':'Nome do professor',
+'Preferred address (from syllabus)':'Forma de tratamento (no plano de ensino)',
+'Kind of help':'Tipo de solicitação','Extension request':'Pedido de prorrogação',
+'Missed class':'Falta à aula','Grade question':'Dúvida sobre nota',
+'Office hours appointment':'Agendar atendimento','Concept help':'Ajuda com conteúdo',
+'Your name (for the signature)':'Seu nome (na assinatura)',
+'Excuse / context (optional)':'Contexto (opcional)','Extra notes':'Observações adicionais',
+'Draft email':'Criar rascunho','Review the draft. Edit freely. Nothing sends until you click send.':'Revise o rascunho e edite à vontade. Nada será enviado sem sua autorização.',
+'Copy':'Copiar','From':'De','Open in Gmail':'Abrir no Gmail','Send via Outlook':'Enviar pelo Outlook',
+'Course lanes':'Matérias','Pressure across the semester':'Demandas ao longo do semestre',
+'Now':'Agora','Finals':'Provas finais','Import a source':'Importar arquivo',
+'On-screen agent':'Assistente na tela','Show overlay':'Mostrar janela','Hide overlay':'Ocultar janela',
+'Ask Nūs anything, in a thread':'Converse com o Nūs','Send':'Enviar',
+'Select a session to read its transcript.':'Selecione uma sessão para ler a transcrição.',
+'Not signed in':'Não conectado','Data':'Dados','Sign in to Nūs':'Entrar no Nūs',
+'Google or email. Local mode stays available if you skip sign-in.':'Entre com Google ou e-mail. O modo local continua disponível se você pular esta etapa.',
+'Signed in as':'Conectado como','Anonymous usage stats are on':'As estatísticas anônimas estão ativadas'
+};
+function tr(node){const raw=node.nodeValue;if(!raw||!raw.trim())return;const lead=raw.match(/^\s*/)[0],tail=raw.match(/\s*$/)[0],key=raw.trim();if(dict[key])node.nodeValue=lead+dict[key]+tail;}
+function walk(el){for(const a of ['placeholder','title','aria-label']){const v=el.getAttribute&&el.getAttribute(a);if(v&&dict[v])el.setAttribute(a,dict[v]);}for(const n of el.childNodes||[]){if(n.nodeType===3)tr(n);else if(n.nodeType===1)walk(n);}}
+walk(document.body);new MutationObserver(ms=>{for(const m of ms){if(m.type==='characterData')tr(m.target);for(const n of m.addedNodes||[])if(n.nodeType===3)tr(n);else if(n.nodeType===1)walk(n);}}).observe(document.body,{subtree:true,childList:true,characterData:true});
+})();

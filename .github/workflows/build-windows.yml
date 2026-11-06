@@ -48,10 +48,10 @@ jobs:
             'companion/renderer/pt-BR.js'
           )
           foreach ($file in $files) { node --check $file; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE } }
-      - name: Check packaged app security
-        run: npm run dist:check
       - name: Build Windows installer and portable app
         run: npm run dist
+      - name: Check packaged app security
+        run: npm run dist:check
       - name: Upload Windows builds
         uses: actions/upload-artifact@v4
         with:
