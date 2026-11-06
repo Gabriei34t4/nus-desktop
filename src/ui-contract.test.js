@@ -261,8 +261,8 @@ test('both API keys are reachable from the desktop app and explained', () => {
   assert.match(indexHtml, /id="companion-ai-card"/, 'and has its own Settings card');
   assert.match(indexHtml, /id="rail-storage"/, 'storage shows in the rail');
   const tour = appJs.slice(appJs.indexOf('const tourSteps=['), appJs.indexOf('let focusPicked='));
-  assert.match(tour, /Key 1 of 2/, 'the tour covers the desktop key');
-  assert.match(tour, /Key 2 of 2/, 'and the Companion key');
+  assert.match(tour, /Configure o provedor de IA principal/, 'the tour covers the desktop provider');
+  assert.match(tour, /Configure a IA do Companion/, 'and the Companion provider');
   // The label is ${MOD} (Ctrl on Windows, ⌘ on macOS) since the shortcut is CommandOrControl.
   assert.match(tour, /\$\{MOD\}\+Shift\+Space/, 'and the Companion commands');
   assert.match(appJs, /const MOD = IS_MAC \? '⌘' : 'Ctrl'/, 'MOD follows the platform the preload reports');

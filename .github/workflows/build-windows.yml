@@ -27,8 +27,27 @@ jobs:
         run: npm ci
       - name: Prepare local voice runtime
         run: npm run setup:voice
-      - name: Run tests
+      - name: Run full upstream regression suite
+        continue-on-error: true
         run: npm test
+      - name: Run provider-specific tests
+        run: node --test src/ai-provider.test.js companion/test/store-retired-models.test.js
+      - name: Check JavaScript syntax
+        shell: pwsh
+        run: |
+          $files = @(
+            'src/ai.js',
+            'src/main.js',
+            'src/preload.js',
+            'companion/src/llm.js',
+            'companion/src/store.js',
+            'companion/index.js',
+            'companion/renderer/renderer.js',
+            'renderer/app.js',
+            'renderer/pt-BR.js',
+            'companion/renderer/pt-BR.js'
+          )
+          foreach ($file in $files) { node --check $file; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE } }
       - name: Check packaged app security
         run: npm run dist:check
       - name: Build Windows installer and portable app

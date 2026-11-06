@@ -85,9 +85,10 @@ test('a hedged pick is pointed at as a best guess instead of refused', () => {
   assert.match(llm, /Math\.max\(Number\(maxTokens\) \|\| 0, 1024\)/);
 });
 
-test('NUS_GUIDE_PROVIDER=claude forces guide steps onto Claude Code even with a Companion key', () => {
-  assert.match(main, /const FORCE_CLAUDE_GUIDE = process\.env\.NUS_GUIDE_PROVIDER === 'claude';/);
-  assert.match(main, /if \(own\.ready && !FORCE_CLAUDE_GUIDE\) return own;/);
+test('the Companion guide uses the configured provider and has no forced Claude route', () => {
+  assert.match(main, /const FORCE_CLAUDE_GUIDE = false;/);
+  assert.match(main, /const own = createLLM\(store\.getSettings\(\)\)/);
+  assert.doesNotMatch(main, /process\.env\.NUS_GUIDE_PROVIDER/);
 });
 
 test('the guide captures at full resolution so a model box lands on the control', () => {

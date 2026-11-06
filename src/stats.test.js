@@ -370,6 +370,6 @@ test('the desktop wires stats through the preload and main like every other sett
   assert.match(main, /stats\.start\(withAcquisitionDims\('app_open'/);
   assert.match(main, /acquisition\.hasFirstImport\(userData\)\) trackEvent\('import'/);
   assert.match(main, /trackEvent\('companion_session', \{ minutes:/);
-  assert.match(main, /trackEvent\('key_connected', \{ provider: 'anthropic' \}\)/);
+  assert.match(main, /trackEvent\('key_connected', \{ provider: result\.provider \|\| 'gemini' \}\)/);
   assert.match(read('companion/index.js'), /hooks\.onAsk\(mode\)/);
 });

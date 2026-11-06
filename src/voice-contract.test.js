@@ -25,16 +25,13 @@ test('local STT spawns whisper with bare-transcript flags and no hardcoded user 
   assert.match(sttLocal, /windowsHide: true/);
 });
 
-test('streaming CLI runner keeps the subscription billing rule', () => {
-  // Both spawn paths must strip a stray API key so claude -p bills the
-  // subscription. One helper (cliEnv) does the delete; runCli and runCliStream
-  // must both spawn with it and neither may build its own env.
-  assert.match(aiJs, /function cliEnv\(\)[\s\S]*?delete env\.ANTHROPIC_API_KEY/, 'cliEnv must delete ANTHROPIC_API_KEY');
-  const usesHelper = aiJs.match(/env: cliEnv\(\), windowsHide: true/g) || [];
-  assert.ok(usesHelper.length >= 2, 'runCli AND runCliStream must spawn with cliEnv()');
-  const outsideHelper = aiJs.replace(/function cliEnv\(\)[\s\S]*?\n\}/, '');
-  assert.ok(!/\{ \.\.\.process\.env \}/.test(outsideHelper), 'no spawn path may build its own env');
-  assert.match(aiJs, /stream-json/);
+test('AI requests use the selected provider and do not use Anthropic credentials', () => {
+  assert.match(aiJs, /PROVIDERS = \['gemini', 'nvidia', 'freellmapi'\]/);
+  assert.match(aiJs, /secrets\.getSecret\(secretName\(c\.provider\)\)/);
+  assert.match(aiJs, /new GoogleGenAI/);
+  assert.match(aiJs, /integrate\.api\.nvidia\.com/);
+  assert.match(aiJs, /localhost:3001\/v1/);
+  assert.doesNotMatch(aiJs, /api\.anthropic\.com|ANTHROPIC_API_KEY|claude-sonnet/);
 });
 
 test('desktop window gets microphone only, never display-capture', () => {
