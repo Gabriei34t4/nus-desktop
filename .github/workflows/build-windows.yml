@@ -36,7 +36,6 @@ jobs:
       - name: Prepare local voice runtime
         run: npm run setup:voice
       - name: Run full upstream regression suite
-        continue-on-error: true
         run: npm test
       - name: Run provider-specific tests
         run: node --test src/ai-provider.test.js companion/test/store-retired-models.test.js
@@ -44,6 +43,7 @@ jobs:
         shell: pwsh
         run: |
           $files = @(
+            'src/config.js',
             'src/ai.js',
             'src/main.js',
             'src/preload.js',
@@ -58,6 +58,12 @@ jobs:
           foreach ($file in $files) { node --check $file; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE } }
       - name: Build Windows installer and portable app
         run: npm run dist -- --publish never
+      - name: Verify packaged runtime config exists
+        shell: pwsh
+        run: |
+          $asar = Get-ChildItem dist -Recurse -Filter app.asar | Select-Object -First 1
+          if (-not $asar) { throw 'app.asar was not produced' }
+          npx --no-install asar list $asar.FullName | Select-String 'src/config.js' -ErrorAction Stop
       - name: Check packaged app security
         run: npm run dist:check
       - name: Upload Windows builds
