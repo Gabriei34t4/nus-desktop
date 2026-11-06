@@ -75,10 +75,10 @@ const DEFAULTS = {
   apiKeys: { gemini: '', nvidia: '', freellmapi: '' },
   baseURL: 'http://localhost:3001/v1',
   models: {
-    freellmapi: { fast: 'auto', smart: 'auto' },
+    freellmapi: { fast: 'auto:fast', smart: 'auto:smart' },
     // 2026-09-15: gemini-2.5-* returns 404 "no longer available to new users".
-    gemini: { fast: 'gemini-3.6-flash', smart: 'gemini-3.6-pro' },
-    nvidia: { fast: 'meta/llama-3.3-70b-instruct', smart: 'meta/llama-3.3-70b-instruct' }
+    gemini: { fast: 'gemini-3.8-flash', smart: 'gemini-3.8-flash' },
+    nvidia: { fast: 'meta/llama-3.2-11b-vision-instruct', smart: 'meta/llama-3.2-11b-vision-instruct' }
   }
 };
 
@@ -88,19 +88,18 @@ const DEFAULTS = {
 // no longer exists and every Companion answer fails with a 404. Retired IDs are
 // rewritten to the current default for that provider and tier, once, on load.
 const RETIRED_MODELS = {
-  anthropic: {
-    'claude-3-5-haiku-latest': 'claude-haiku-4-5',
-    'claude-3-5-sonnet-latest': 'claude-sonnet-5',
-  },
   // 2026-09-16: gemini-2.5-* and 2.0 return 404 for new users; a v0.2.5
   // settings file that ever opened Settings carries them.
   gemini: {
-    'gemini-2.5-flash': 'gemini-3.6-flash',
-    'gemini-2.5-pro': 'gemini-3.6-pro',
-    'gemini-2.0-flash': 'gemini-3.6-flash',
-    'gemini-1.5-flash': 'gemini-3.6-flash',
-    'gemini-1.5-pro': 'gemini-3.6-pro',
+    'gemini-2.5-flash': 'gemini-3.8-flash',
+    'gemini-2.5-pro': 'gemini-3.8-flash',
+    'gemini-2.0-flash': 'gemini-3.8-flash',
+    'gemini-1.5-flash': 'gemini-3.8-flash',
+    'gemini-1.5-pro': 'gemini-3.8-flash',
+    'gemini-3.6-flash': 'gemini-3.8-flash',
+    'gemini-3.6-pro': 'gemini-3.8-flash',
   },
+  nvidia: { 'meta/llama-3.3-70b-instruct': 'meta/llama-3.2-11b-vision-instruct' },
 };
 
 function retireDeadModels(settings) {
