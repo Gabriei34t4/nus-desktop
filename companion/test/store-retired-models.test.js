@@ -16,22 +16,22 @@ function loadStore() {
   try { return require('../src/store'); } finally { Module._load = real; }
 }
 
-test('retired Gemini and Anthropic model IDs are rewritten to the current defaults', () => {
+test('retired model IDs migrate to the supported provider defaults', () => {
   const store = loadStore();
   const settings = { models: {
-    gemini: { fast: 'gemini-2.5-flash', smart: 'gemini-2.5-pro' },
-    anthropic: { fast: 'claude-3-5-haiku-latest', smart: 'claude-sonnet-5' },
-    openai: { fast: 'gpt-4o-mini', smart: 'gpt-4o' },
+    gemini: { fast: 'gemini-2.5-flash', smart: 'gemini-3.6-pro' },
+    nvidia: { fast: 'meta/llama-3.3-70b-instruct', smart: 'meta/llama-3.3-70b-instruct' },
+    freellmapi: { fast: 'auto', smart: 'auto' },
   } };
   assert.equal(store._retireDeadModels(settings), true);
-  assert.deepEqual(settings.models.gemini, { fast: 'gemini-3.6-flash', smart: 'gemini-3.6-pro' });
-  assert.deepEqual(settings.models.anthropic, { fast: 'claude-haiku-4-5', smart: 'claude-sonnet-5' });
-  assert.deepEqual(settings.models.openai, { fast: 'gpt-4o-mini', smart: 'gpt-4o' });
+  assert.deepEqual(settings.models.gemini, { fast: 'gemini-3.8-flash', smart: 'gemini-3.8-flash' });
+  assert.deepEqual(settings.models.nvidia, { fast: 'meta/llama-3.2-11b-vision-instruct', smart: 'meta/llama-3.2-11b-vision-instruct' });
+  assert.deepEqual(settings.models.freellmapi, { fast: 'auto:fast', smart: 'auto:smart' });
 });
 
 test('current model IDs are left alone and report no change', () => {
   const store = loadStore();
-  const settings = { models: { gemini: { fast: 'gemini-3.6-flash', smart: 'gemini-3.6-pro' } } };
+  const settings = { models: { gemini: { fast: 'gemini-3.8-flash', smart: 'gemini-3.8-flash' } } };
   assert.equal(store._retireDeadModels(settings), false);
-  assert.equal(settings.models.gemini.fast, 'gemini-3.6-flash');
+  assert.equal(settings.models.gemini.fast, 'gemini-3.8-flash');
 });

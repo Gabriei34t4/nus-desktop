@@ -105,6 +105,10 @@ const RETIRED_MODELS = {
 
 function retireDeadModels(settings) {
   let changed = false;
+  if (settings.models && settings.models.freellmapi) {
+    if (settings.models.freellmapi.fast === 'auto') { settings.models.freellmapi.fast = 'auto:fast'; changed = true; }
+    if (settings.models.freellmapi.smart === 'auto') { settings.models.freellmapi.smart = 'auto:smart'; changed = true; }
+  }
   for (const provider of Object.keys(RETIRED_MODELS)) {
     const tiers = settings.models && settings.models[provider];
     if (!tiers) continue;

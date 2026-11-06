@@ -163,11 +163,16 @@ test('all three hide levels exist, with a way back that does not need a hotkey',
   assert.match(panic.slice(0, 300), /setCapturing\(false\)/);
 });
 
-test('the CLI spawn never inherits an API key and errors leave a trail', () => {
+test('the desktop AI layer supports only the selected three providers', () => {
   const aiJs = read('src/ai.js');
-  assert.match(aiJs, /delete env\.ANTHROPIC_API_KEY/, 'CLI bills the subscription, never a stray env key');
-  assert.match(aiJs, /ai-errors\.log/, 'AI errors are logged to userData');
-  assert.match(appJs, /function aiError\(code,detail\)/, 'error detail reaches the toast');
+  const pkg = JSON.parse(read('package.json'));
+  assert.match(aiJs, /PROVIDERS = \['gemini', 'nvidia', 'freellmapi'\]/);
+  assert.match(aiJs, /new GoogleGenAI/);
+  assert.match(aiJs, /https:\/\/integrate\.api\.nvidia\.com\/v1/);
+  assert.match(aiJs, /http:\/\/localhost:3001\/v1/);
+  assert.doesNotMatch(aiJs, /api\.anthropic\.com|claude-sonnet|anthropic_api_key/);
+  assert.equal(pkg.dependencies['@anthropic-ai/sdk'], undefined);
+  assert.match(appJs, /function aiError\(code,detail\)/, 'provider error detail reaches the toast');
 });
 
 test('the Knot mark state is persisted and restorable from the desktop', () => {
@@ -204,11 +209,20 @@ test('the Companion outlives the dashboard and can be removed from it', () => {
   assert.match(disable.slice(0, 420), /setCapturing\(false\)/);
 });
 
-test('the CLI runs a pinned model, not the user most expensive default', () => {
-  const aiJs = read('src/ai.js');
-  assert.match(aiJs, /'--model', MODEL/, 'the spawn pins the model');
-  assert.match(aiJs, /const MODEL = 'claude-sonnet-5'/, 'and it is the mid-tier one');
-  assert.match(aiJs, /cli_spend_limit/, 'a spend cap is reported as its own fixable case');
+test('the provider selectors and Portuguese interface exist in both windows', () => {
+  assert.match(indexHtml, /lang="pt-BR"/);
+  assert.match(indexHtml, /id="ai-provider"/);
+  assert.match(indexHtml, /value="freellmapi"/);
+  assert.match(indexHtml, /id="companion-ai-provider"/);
+  assert.match(indexHtml, /Provedor de IA/);
+  assert.match(indexHtml, /src="pt-BR\.js"/);
+  const companionHtml = read('companion/renderer/index.html');
+  assert.match(companionHtml, /lang="pt-BR"/);
+  assert.match(companionHtml, /data-provider="freellmapi"/);
+  assert.match(companionHtml, /src="pt-BR\.js"/);
+  const llm = read('companion/src/llm.js');
+  assert.match(llm, /freellmapi/);
+  assert.match(llm, /integrate\.api\.nvidia\.com/);
 });
 
 test('Gmail works with no connection and never guesses the sending address', () => {
