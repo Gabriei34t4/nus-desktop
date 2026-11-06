@@ -8,7 +8,7 @@ O aplicativo principal e o Companion permitem escolher entre três provedores:
 
 - **Google AI Studio** — crie uma chave em https://aistudio.google.com/apikey. Também pode ser usado como alternativa para transcrição de voz.
 - **NVIDIA** — crie uma chave em https://build.nvidia.com/ e use um modelo disponível para sua conta.
-- **FreeLLMAPI** — execute o serviço local e use a chave unificada criada no painel. O endereço padrão é `http://localhost:3001/v1`. Consulte https://github.com/lov0u/freellmapi para instalar e iniciar o serviço.
+- **FreeLLMAPI** — instale e execute o gateway local; abra `http://localhost:3001`, adicione as chaves dos provedores no painel e copie a chave unificada. O endereço padrão é `http://localhost:3001/v1`. O gateway precisa continuar aberto enquanto você usa o Nūs. Instalação para Windows e Docker: https://github.com/tashfeenahmed/freellmapi.
 
 Abra **Configurações → Provedor de IA** para configurar o provedor do aplicativo principal. O cartão **Provedor de IA do Companion** configura o assistente flutuante separadamente. Cada um pode usar um provedor diferente. As chaves são armazenadas com a criptografia do sistema operacional.
 

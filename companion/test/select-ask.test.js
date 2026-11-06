@@ -85,8 +85,8 @@ test('a hedged pick is pointed at as a best guess instead of refused', () => {
   assert.match(llm, /Math\.max\(Number\(maxTokens\) \|\| 0, 1024\)/);
 });
 
-test('the Companion guide uses the configured provider and has no forced Claude route', () => {
-  assert.match(main, /const FORCE_CLAUDE_GUIDE = false;/);
+test('the Companion guide uses the configured provider and has no forced legacy provider route', () => {
+  assert.match(main, /const FORCE_DESKTOP_GUIDE = false;/);
   assert.match(main, /const own = createLLM\(store\.getSettings\(\)\)/);
   assert.doesNotMatch(main, /process\.env\.NUS_GUIDE_PROVIDER/);
 });

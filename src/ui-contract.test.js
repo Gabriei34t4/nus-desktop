@@ -170,7 +170,8 @@ test('the desktop AI layer supports only the selected three providers', () => {
   assert.match(aiJs, /new GoogleGenAI/);
   assert.match(aiJs, /https:\/\/integrate\.api\.nvidia\.com\/v1/);
   assert.match(aiJs, /http:\/\/localhost:3001\/v1/);
-  assert.doesNotMatch(aiJs, /api\.anthropic\.com|claude-sonnet|anthropic_api_key/);
+  assert.doesNotMatch(aiJs, /api\.anthropic\.com|claude-sonnet/);
+  assert.match(aiJs, /cleanupLegacySecrets/);
   assert.equal(pkg.dependencies['@anthropic-ai/sdk'], undefined);
   assert.match(appJs, /function aiError\(code,detail\)/, 'provider error detail reaches the toast');
 });

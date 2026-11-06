@@ -990,14 +990,14 @@ function hashCapture(cap, physRect) {
 }
 
 // The Companion uses its selected provider; the desktop provider is only a fallback.
-const FORCE_CLAUDE_GUIDE = false;
+const FORCE_DESKTOP_GUIDE = false;
 // Full-resolution capture: in apps with no UI Automation the model's box IS
 // the pointer, and a shrunk screenshot put it a toolbar icon off.
 const GUIDE_CAPTURE_MAXSIDE = Number(process.env.NUS_GUIDE_MAXSIDE) || 2560;
 function guideLlm() {
   const own = createLLM(store.getSettings());
   if (typeof hooks.desktopComplete !== 'function') return own;
-  if (own.ready && !FORCE_CLAUDE_GUIDE) return own;
+  if (own.ready && !FORCE_DESKTOP_GUIDE) return own;
   return {
     ready: true,
     provider: 'Nūs desktop',
