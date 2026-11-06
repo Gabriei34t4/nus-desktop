@@ -825,7 +825,7 @@ app.whenReady().then(async () => {
     },
     onStateChange: (status) => sendToDesktop('companion:state', status),
     onOutboxEvent: () => { try { ingestCompanionEvents(); } catch (e) { console.error('[nus] live ingest failed', e); } },
-    // The desktop's own AI (Claude Code if installed, else the Anthropic key)
+    // The desktop's selected AI provider and encrypted API key
     // as the Companion's fallback for guide pointing when it has no key of
     // its own. One prompt in, text out; the CLI can read an image file.
     desktopComplete: (prompt, imageDataUrl) => ai.complete(prompt, { guidance: true, imageDataUrl }),
@@ -971,7 +971,7 @@ async function prepareChatTurn(messages, opts) {
     if (parsed.error === 'target_not_found' && cmd) {
       return { response: { text: `I could not find "${cmd.target_title || cmd.title || 'that item'}" in your semester. What is its exact name?` } };
     }
-    const PROVIDER_ERRORS = ['no_ai', 'cli_timeout', 'cli_failed', 'cli_not_logged_in', 'cli_spawn_failed', 'api_failed', 'api_refused', 'api_timeout', 'api_network'];
+    const PROVIDER_ERRORS = ['no_ai', 'api_auth', 'api_model', 'api_rate_limit', 'api_failed', 'api_refused', 'api_timeout', 'api_network', 'empty_response'];
     if (parsed.error && PROVIDER_ERRORS.includes(parsed.error)) { questionTicket.rollback(); return { response: parsed }; }
     if (parsed.proposal && parsed.proposal.needs_confirm && parsed.proposal.command.confidence >= 0.5) {
       const notes = (parsed.proposal.notes || []).join(' ');
@@ -1207,7 +1207,7 @@ const handlers = {
     const ticket = usageLimits.reserveQuestion();
     if (!ticket.ok) return denied(ticket);
     const result = await assistantParse(text);
-    if (['no_ai', 'cli_timeout', 'cli_failed', 'cli_not_logged_in', 'cli_spawn_failed', 'api_failed', 'api_refused', 'api_timeout', 'api_network'].includes(result?.error)) ticket.rollback();
+    if (['no_ai', 'api_auth', 'api_model', 'api_rate_limit', 'api_failed', 'api_refused', 'api_timeout', 'api_network', 'empty_response'].includes(result?.error)) ticket.rollback();
     // A plain question continues into chat:send, which counts it; only a
     // proposal that ends the turn here is counted here, so one ask is one row.
     else if (result?.proposal?.needs_confirm) trackAsk('text');
@@ -1293,7 +1293,7 @@ const handlers = {
   },
   'companion:ai:clear-key': (_event, provider) => {
     const companionStore = require('../companion/src/store');
-    const name = ['gemini', 'openai', 'anthropic', 'nvidia'].includes(provider) ? provider : 'gemini';
+    const name = ['gemini', 'nvidia', 'freellmapi'].includes(provider) ? provider : 'gemini';
     companionStore.setSettings({ apiKeys: { [name]: '' } });
     return { ok: true };
   },

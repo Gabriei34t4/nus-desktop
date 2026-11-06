@@ -6,7 +6,7 @@ on:
       - feat/pt-br-ai-providers
   pull_request:
     branches:
-      - feat/pt-br-ai-providers
+      - main
 
 permissions:
   contents: read

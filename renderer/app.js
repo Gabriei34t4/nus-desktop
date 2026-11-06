@@ -518,7 +518,7 @@ async function importDefault(){const result=await api.importSource('calendar_fil
 $('#import-primary').addEventListener('click',importSyllabusFlow);
 $('#source-import').addEventListener('click',()=>setView('integrations'));
 
-const AI_ERRORS={no_ai:'Connect an AI provider first. Taking you to Settings.',empty_text:'No readable text in that file. Scanned PDFs need selectable text.',bad_json:'The AI reply was not readable. Try the import again.',read_failed:'Could not read that file.',storage_limit:'Nūs local storage is full. Remove an import before adding another.',limit_syllabus_imports:'Free includes three AI syllabus imports. Upgrade to Pro for more.',limit_questions:'Free includes ten Ask or chat questions each day. Upgrade to Pro or come back tomorrow.',limit_connected_accounts:'Free includes one connected account. Disconnect the current account or upgrade to Pro.',limit_automation_rules:'Free includes one automation rule. Remove it or upgrade to Pro.',limit_companion_minutes:'Free Companion listening is used for today. Upgrade to Pro or come back tomorrow.',limit_companion_history:'Free includes seven days of Companion history. Upgrade to Pro for full history.',cli_timeout:'Claude Code took too long. Try again.',cli_failed:'Claude Code returned an error.',cli_spend_limit:'Your Claude subscription hit its spend limit. Add an Anthropic API key in Settings, or raise the limit in Claude Code.',cli_not_logged_in:'Claude Code is installed but signed out. Open a terminal, run "claude", then /login, or paste an Anthropic API key in Settings.',cli_spawn_failed:'Claude Code could not start.',api_failed:'The Anthropic API returned an error.',api_refused:'The AI declined this content.',api_timeout:'The API call timed out. Try again.',api_network:'Network problem reaching Anthropic.',unexpected_reply:'The provider answered, but not as expected.',source_missing:'That import is no longer on file.',course_name_required:'The course needs a name.',target_not_found:'I could not find that item. Try its exact name.',incomplete_command:'I need a bit more: which item, and what date?',unknown_intent:'That request did not survive the trip. Try again.'};
+const AI_ERRORS={no_ai:'Configure um provedor de IA nas Configurações.',empty_text:'Não foi encontrado texto legível nesse arquivo. PDFs digitalizados precisam de OCR.',bad_json:'A resposta da IA não pôde ser interpretada. Tente importar novamente.',read_failed:'Não foi possível ler esse arquivo.',api_auth:'A chave de API foi recusada. Confira se está correta.',api_model:'O modelo selecionado não está disponível para essa chave.',api_rate_limit:'O provedor atingiu o limite de solicitações. Aguarde e tente novamente.',api_failed:'O provedor de IA retornou um erro.',api_timeout:'A solicitação demorou demais. Tente novamente.',api_network:'Não foi possível alcançar o provedor. Confira sua conexão.',empty_response:'O provedor retornou uma resposta vazia.',api_refused:'A IA não pôde atender a esse pedido.',unexpected_reply:'O provedor respondeu em um formato inesperado.',storage_limit:'O armazenamento local do Nūs está cheio. Remova uma importação antes de adicionar outra.',limit_syllabus_imports:'O plano gratuito inclui três importações de planos de ensino com IA. Assine o Pro para mais.',limit_questions:'O plano gratuito inclui dez perguntas por dia. Assine o Pro ou volte amanhã.',limit_connected_accounts:'O plano gratuito inclui uma conta conectada. Desconecte a conta atual ou assine o Pro.',limit_automation_rules:'O plano gratuito inclui uma regra de automação. Remova uma regra ou assine o Pro.',limit_companion_minutes:'Você usou o tempo diário de escuta do Companion. Assine o Pro ou volte amanhã.',limit_companion_history:'O plano gratuito inclui sete dias de histórico do Companion. Assine o Pro para ter o histórico completo.',source_missing:'Essa importação não está mais disponível.',course_name_required:'A matéria precisa ter um nome.',target_not_found:'Não encontrei esse item. Tente usar o nome exato.',incomplete_command:'Preciso de mais detalhes: qual item e qual data?',unknown_intent:'Não consegui entender essa solicitação. Tente novamente.'};
 Object.assign(AI_ERRORS, { voice_setup_required:'Complete voice setup in Nūs before recording.', capture_finalizing:'Nūs is saving the last words. Please wait a moment.', companion_busy:'Finish your guide or voice question before recording.' });
 function aiError(code,detail){const base=AI_ERRORS[code]||`Request failed (${code}).`;return detail?`${base} (${String(detail).slice(0,120)})`:base;}
 
@@ -899,26 +899,30 @@ async function renderSettings(){
 // The Companion's provider key, managed from the desktop so the overlay is
 // usable without hunting for its gear icon.
 async function renderCompanionAiState(){
-  const badge=$('#companion-ai-badge'); if(!badge)return;
-  const status=await api.companionAiStatus?.().catch(()=>null);
-  const has=Boolean(status?.keys?.gemini||status?.keys?.openai);
-  badge.textContent=has?'Key saved':'Desktop fallback';
-  badge.classList.toggle('good',has);
-  $('#companion-ai-title').textContent=has?'Companion provider configured':'Screen guidance can use desktop Claude';
-  $('#companion-ai-clear')?.classList.toggle('hidden',!status?.keys?.gemini);
+  const badge=$('#companion-ai-badge');if(!badge)return;
+  const status=await api.companionAiStatus?.().catch(()=>null),provider=$('#companion-ai-provider');
+  const active=status?.provider||'gemini';provider.value=active;
+  const names={gemini:'Google AI Studio',nvidia:'NVIDIA',freellmapi:'FreeLLMAPI'};
+  const has=Boolean(status?.keys?.[active]);
+  badge.textContent=has?'Chave salva':'Sem chave';badge.classList.toggle('good',has);
+  $('#companion-ai-title').textContent=has?'Conectado: '+(names[active]||active):'Configure a IA do Companion';
+  $('#companion-ai-url-field').classList.toggle('hidden',active!=='freellmapi');
+  $('#companion-ai-clear')?.classList.toggle('hidden',!has);
 }
-$('#companion-ai-save')?.addEventListener('click',async()=>{
-  const input=$('#companion-ai-key'); const key=(input.value||'').trim();
-  if(!key){$('#companion-ai-result').textContent='Paste a key first.';return;}
-  const result=await api.companionAiSetKey({provider:'gemini',key});
-  input.value='';
-  $('#companion-ai-result').textContent=result?.error?'That key was not accepted.':'Saved. The Knot can answer now.';
+$('#companion-ai-provider')?.addEventListener('change',async()=>{
+  const provider=$('#companion-ai-provider').value;
+  await api.companionAiSetKey({provider,key:'',baseURL:$('#companion-ai-base-url').value});
   renderCompanionAiState();
 });
+$('#companion-ai-save')?.addEventListener('click',async()=>{
+  const input=$('#companion-ai-key'),key=(input.value||'').trim(),provider=$('#companion-ai-provider').value;
+  if(!key){$('#companion-ai-result').textContent='Cole uma chave primeiro.';return;}
+  const result=await api.companionAiSetKey({provider,key,baseURL:$('#companion-ai-base-url').value});input.value='';
+  $('#companion-ai-result').textContent=result?.error?'Não foi possível salvar a chave.':'Chave salva.';renderCompanionAiState();
+});
 $('#companion-ai-clear')?.addEventListener('click',async()=>{
-  await api.companionAiClearKey('gemini');
-  $('#companion-ai-result').textContent='Key removed.';
-  renderCompanionAiState();
+  await api.companionAiClearKey($('#companion-ai-provider').value);
+  $('#companion-ai-result').textContent='Chave removida.';renderCompanionAiState();
 });
 
 // Settings sidebar: each link scrolls its card into view and lights up.
@@ -1502,8 +1506,8 @@ const APP_GUIDE=[
   {match:/close|quit|exit|background|still running|stays open/,go:'companion',label:'Open Knot settings',answer:'Closing the dashboard leaves the Companion running on your desktop with every hotkey live, the same way it works after a restart. The tray icon reopens the dashboard or quits Nūs entirely, and Turn off Companion on this pane removes the overlay for good.'},
   {match:/stealth|invisible|hide.*(companion|overlay|knot)/,go:'companion',label:'Open Knot settings',answer:`${MOD}+Shift+Space hides the whole Companion, ${MOD}+Shift+X stops listening and vanishes. The Knot mark alone can be hidden or shown from this pane, and this pane is always the way back.`},
   {match:/history|transcript|recording|session/,go:'history',label:'Open History',answer:'Every Companion capture session lands under Knot > History: full transcript, search, and upload into your Jarvis vault with a preview before anything is written.'},
-  {match:/gemini|companion.*(key|api)|key.*companion|overlay.*key/,go:'settings',label:'Open Settings',answer:'Screen guidance can use desktop Claude when no Companion key is set. The Companion AI key card in Settings adds Gemini for Companion answers and cloud speech fallback. For keyless voice, click Talk on the Knot and complete local voice setup.'},
-  {match:/api key|anthropic|claude key|which model/,go:'settings',label:'Open Settings',answer:'Two keys, two jobs. Desktop app: Claude, found automatically if Claude Code is installed, otherwise an Anthropic API key in Settings > AI provider. It runs on Sonnet so syllabus reading stays affordable. Companion overlay: its own Gemini key in the Companion AI key card just below.'},
+  {match:/gemini|nvidia|freellmapi|companion.*(key|api)|key.*companion|overlay.*key/,go:'settings',label:'Abrir Configurações',answer:'O Companion usa o provedor de IA selecionado no cartão dele. Escolha Google AI Studio, NVIDIA ou FreeLLMAPI e salve a chave para ativar as respostas.'},
+  {match:/api key|anthropic|claude key|which model|provedor|chave de api/,go:'settings',label:'Abrir Configurações',answer:'O Nūs e o Companion podem usar Google AI Studio, NVIDIA ou FreeLLMAPI. Configure cada provedor e sua chave nas Configurações.'},
   {match:/gmail/,go:'email',label:'Open Email',answer:'Gmail needs no connection: draft the email in the Email tab, then press Open in Gmail. The finished draft opens in a Gmail compose window in your browser with everything filled in, and you press send there.'},
   {match:/email|professor|outlook/,go:'email',label:'Open Email',answer:'Email has its own tab in the rail. Connect Outlook read-only for the inbox brief and your writing style; the professor drafter works even without connecting, and any draft can open straight into Gmail with the Open in Gmail button.'},
   {match:/dashboard|home page|main page|back to today/,go:'today',label:'Open Today',answer:'The dashboard is the Today tab, item 01 in the rail. If the app window is closed, the tray icon has Open Nūs dashboard.'},
@@ -2309,8 +2313,8 @@ const tourSteps=[
   {view:'companion',rail:'companion',title:'The Knot rides on top of everything',body:`The Nūs Knot floats over your screen, answers "What should I do?" from your real semester, and listens when you ask it to. ${MOD}+Shift+Space hides it, ${MOD}+Shift+X stops and vanishes in one stroke.`,action:{label:'Show me the Knot',run:async()=>{await api.companionControl?.('tour');}}},
   {view:'history',rail:'companion',title:'Every session is kept',body:'Transcripts from the Companion land here, searchable, with the briefing pack that was live at the time. Any session can be uploaded into your Jarvis vault as a note, and you see the exact markdown before it is written.'},
   {view:'settings',rail:'settings',title:'Settings is where the wiring lives',body:'Your two AI keys, email and calendar connections, Companion options, and your school\'s GPA scale all live here. The next three steps cover the ones you actually have to do.'},
-  {view:'settings',rail:'settings',title:'Key 1 of 2: Claude, for the desktop app',body:'The AI provider card on this page. Claude reads your syllabi and powers the Ask bar and the chat thread. If Claude Code is installed on this machine, Nūs finds it automatically and there is nothing to paste. If not, put an Anthropic API key in that card. It is encrypted on this device and only ever used to call Anthropic.'},
-  {view:'settings',rail:'settings',title:'Key 2 of 2: Gemini, for the Companion',body:'The Companion AI key card, right below the AI provider one. The floating Knot is a separate agent: it sees your screen and listens, so it runs on its own provider to stay fast and cheap. Paste a Google Gemini key there (the free tier at aistudio.google.com/apikey is enough) and the Knot starts answering with AI. Even without it, "What should I do?" answers from your semester on this machine. The Knot\'s own gear icon sets the same key if you prefer.'},
+  {view:'settings',rail:'settings',title:'Configure o provedor de IA principal',body:'Escolha Google AI Studio, NVIDIA ou FreeLLMAPI. O provedor selecionado lê seus planos de ensino e alimenta o campo Perguntar e as conversas. A chave fica criptografada neste computador.'},
+  {view:'settings',rail:'settings',title:'Configure a IA do Companion',body:'O Companion também pode usar Google AI Studio, NVIDIA ou FreeLLMAPI. Selecione o provedor, informe a chave e teste a conexão. A chave fica criptografada neste computador.'},
   {view:'settings',rail:'settings',title:'Fix your GPA scale',body:'Scroll to the GPA scale card, or click Data in the left column. Every school maps percentages to letters differently, so match that table to your syllabus or the registrar once. Semester setup and every GPA projection read from it, and Nūs never guesses a missing row.'},
   {view:'companion',rail:'companion',title:'Driving the Companion',action:{label:'Show me the Knot',run:()=>{api.companionControl?.('tour');}},body:`On screen: click the Knot, then press "What should I do?" or type anything. ${MOD}+Enter asks from anywhere, even with no key set. ${MOD}+Shift+Space hides or shows it, ${MOD}+Shift+X stops listening and vanishes. It keeps running with the hotkeys live after you close this dashboard, and the ${IS_MAC?'menu bar':'tray'} icon brings the dashboard back. Turn off Companion on this pane removes it entirely.`},
   {view:'today',rail:null,title:'You are set',body:'That is the tour. Anything you import lands in a review table before it is saved, so nothing enters your semester without you seeing it. You can replay this walkthrough any time from Settings.',done:true},

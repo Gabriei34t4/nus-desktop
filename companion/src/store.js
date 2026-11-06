@@ -21,7 +21,7 @@ const DEFAULTS = {
   // packPath feeds the live meeting modes, sparPath feeds rehearsal.
   packPath: '',
   sparPath: '',
-  // Full-vault fallback through the Jarvis server (claude -p). 13 to 30 seconds,
+  // Optional full-vault query endpoint. 13 to 30 seconds,
   // so it is a between-calls tool and never a live one.
   deepQueryUrl: 'http://127.0.0.1:8765/api/ask',
   // Read replies aloud. On for rehearsal, off during a real call.
@@ -201,7 +201,7 @@ function load() {
     if (found) { data.packPath = found.pack; data.sparPath = found.spar; }
   }
 
-  // Migrate legacy OpenAI/Anthropic selections to one of the supported providers.
+  // Migrate selections from unsupported providers to a supported provider.
   const validProviders = ['gemini', 'nvidia', 'freellmapi'];
   if (!validProviders.includes(data.provider)) data.provider = validProviders.find(p => data.apiKeys[p]) || 'gemini';
   if (!data.apiKeys[data.provider]) {

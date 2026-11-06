@@ -297,7 +297,7 @@ function handleSttError(err) {
   const noAccess = err.status === 403 || err.status === 401 || err.code === 'model_not_found';
   sttDisabled = true;
   if (noAccess) {
-    send('status', { message: 'Transcription off: your ' + err.provider + ' key has no access to a speech-to-text model (' + (err.status || err.code) + '). Screen features still work. Para ativar a escuta, use uma chave do Google AI Studio nas Configurações e abra novamente.' });
+    send('status', { message: 'Transcrição desativada: a chave do provedor ' + err.provider + ' não tem acesso a um modelo de fala (' + (err.status || err.code) + '). Os recursos de tela continuam funcionando. Para ativar a escuta, adicione uma chave do Google AI Studio nas Configurações e abra novamente.' });
   } else {
     send('status', { message: 'Transcription error (' + err.provider + '): ' + err.message });
   }
@@ -989,16 +989,8 @@ function hashCapture(cap, physRect) {
   return { whole, crop };
 }
 
-// The Companion's own key when it has one; otherwise the desktop's Claude
-// (Claude Code on the subscription, or its API key) through
-// hooks.desktopComplete(prompt, imageDataUrl): the screenshot travels inline
-// over stdin, the CLI runs with no tools, one model turn (src/guide-input.js).
-// Measured 2026-09-15: Sonnet 5 answers a pointing step in one short JSON
-// reply; Haiku 4.5 padded it with prose and was 4x slower, so the desktop's
-// pinned model stays. A Gemini key in the Companion settings skips the CLI.
-// NUS_GUIDE_PROVIDER=claude ignores the Companion's own key and always guides
-// through the desktop's Claude (a flaky provider minutes before a take).
-const FORCE_CLAUDE_GUIDE = process.env.NUS_GUIDE_PROVIDER === 'claude';
+// The Companion uses its selected provider; the desktop provider is only a fallback.
+const FORCE_CLAUDE_GUIDE = false;
 // Full-resolution capture: in apps with no UI Automation the model's box IS
 // the pointer, and a shrunk screenshot put it a toolbar icon off.
 const GUIDE_CAPTURE_MAXSIDE = Number(process.env.NUS_GUIDE_MAXSIDE) || 2560;
