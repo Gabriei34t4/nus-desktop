@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -316,12 +316,15 @@
             </section>
             <section class="setting-card" id="ai-card">
               <div>
-                <div class="section-kicker">AI provider</div>
-                <h3 id="ai-title">Checking for an AI provider…</h3>
-                <p id="ai-copy">Nūs uses your own AI to read syllabi. Claude Code is detected automatically; otherwise paste an Anthropic API key. The key is encrypted on this device and never leaves it except to call Anthropic.</p>
-                <div id="ai-key-form" class="auth-form hidden">
-                  <label class="field"><span>Anthropic API key</span><input id="ai-key" type="password" placeholder="sk-ant-…" autocomplete="off" /></label>
-                  <div class="sheet-actions"><span id="ai-test-result"></span><div><button id="ai-key-save" class="primary-button">Save key</button><button id="ai-test" class="quiet-button">Test</button><button id="ai-key-clear" class="quiet-button hidden">Remove key</button></div></div>
+                <div class="section-kicker">Provedor de IA</div>
+                <h3 id="ai-title">Configure sua inteligência artificial</h3>
+                <p id="ai-copy">Escolha Google AI Studio, NVIDIA ou FreeLLMAPI. A chave fica criptografada neste computador.</p>
+                <div id="ai-key-form" class="auth-form">
+                  <label class="field"><span>Provedor</span><select id="ai-provider"><option value="gemini">Google AI Studio</option><option value="nvidia">NVIDIA</option><option value="freellmapi">FreeLLMAPI</option></select></label>
+                  <label class="field"><span>Chave de API</span><input id="ai-key" type="password" placeholder="Cole sua chave de API" autocomplete="off" /></label>
+                  <label class="field" id="ai-base-url-field"><span>Endereço FreeLLMAPI</span><input id="ai-base-url" type="text" value="http://localhost:3001/v1" autocomplete="off" /></label>
+                  <label class="field"><span>Modelo (opcional)</span><input id="ai-model" type="text" placeholder="Modelo padrão do provedor" autocomplete="off" /></label>
+                  <div class="sheet-actions"><span id="ai-test-result"></span><div><button id="ai-key-save" class="primary-button">Salvar chave</button><button id="ai-test" class="quiet-button">Testar conexão</button><button id="ai-key-clear" class="quiet-button hidden">Remover chave</button></div></div>
                 </div>
               </div>
               <span id="ai-badge" class="status-badge">Checking</span>

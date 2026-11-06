@@ -611,52 +611,39 @@ $('#gpa-scale-card').addEventListener('click',async(event)=>{
 $('#gpa-preset').addEventListener('change',(event)=>{const preset=GPA_PRESETS[event.target.value];if(!preset)return;state.gpaScale=preset.map(([min,letter,points])=>({min,letter,points}));renderGpaScale();event.target.value='';});
 
 async function renderAiState(){
-  const status=await api.aiStatus();
-  const badge=$('#ai-badge');
-  const form=$('#ai-key-form');
-  // The key form stays available even when the CLI is present: an installed but
-  // signed-out CLI would otherwise leave the user with no way to configure AI.
-  form.classList.remove('hidden');
+  const status=await api.aiStatus(), badge=$('#ai-badge'), provider=$('#ai-provider');
+  provider.value=status.provider||'gemini';
+  const names={gemini:'Google AI Studio',nvidia:'NVIDIA',freellmapi:'FreeLLMAPI'};
+  $('#ai-title').textContent=status.apiKey?'Conectado: '+(names[status.provider]||status.provider):'Configure seu provedor de IA';
+  $('#ai-copy').textContent=status.apiKey?'A chave está salva e criptografada neste computador.':'Escolha Google AI Studio, NVIDIA ou FreeLLMAPI e informe sua chave.';
   $('#ai-key-clear').classList.toggle('hidden',!status.apiKey);
-  if(status.cli){
-    $('#ai-title').textContent=status.apiKey?'Claude Code detected (API key as backup)':'Claude Code detected';
-    $('#ai-copy').textContent='Syllabus reading runs through your Claude Code subscription. If Claude Code is signed out, run "claude" in a terminal and use /login, or paste an Anthropic API key below as a fallback.';
-    badge.textContent='Ready';badge.classList.add('good');
-  }else if(status.apiKey){
-    $('#ai-title').textContent='Anthropic API key saved';
-    $('#ai-copy').textContent='The key is encrypted on this device and used only when you import a syllabus.';
-    badge.textContent='Ready';badge.classList.add('good');
-  }else{
-    $('#ai-title').textContent='Connect an AI to read syllabi';
-    $('#ai-copy').textContent='Install Claude Code (detected automatically), or paste an Anthropic API key. Without one, imports still work for calendar .ics files.';
-    badge.textContent='Not set';badge.classList.remove('good');
-  }
+  $('#ai-base-url-field').classList.toggle('hidden',status.provider!=='freellmapi');
+  $('#ai-base-url').value=status.baseURL||'http://localhost:3001/v1';
+  $('#ai-model').value=status.model||'';
+  badge.textContent=status.apiKey?'Pronto':'Não configurado';
+  badge.classList.toggle('good',!!status.apiKey);
 }
-$('#ai-key-save').addEventListener('click',async()=>{
-  const value=$('#ai-key').value;
-  $('#ai-key').value='';
-  if(!value.trim())return showToast('Paste a key first.');
-  const result=await api.aiSetKey(value);
-  if(result.error)return showToast('That key looks empty.');
-  $('#ai-test-result').textContent='Key saved.';
+$('#ai-provider').addEventListener('change',async()=>{
+  await api.aiSetKey({provider:$('#ai-provider').value,options:{baseURL:$('#ai-base-url').value,model:$('#ai-model').value}});
   await renderAiState();
-  if(state.pendingSourceId){
-    const retry=await api.syllabusExtract(state.pendingSourceId);
-    state.pendingSourceId=null;
-    if(!retry.error)openReview(retry.data,retry.fileName,retry.sourceId);
-  }
+});
+$('#ai-key-save').addEventListener('click',async()=>{
+  const key=$('#ai-key').value.trim(),provider=$('#ai-provider').value;
+  if(!key)return showToast('Cole uma chave de API primeiro.');
+  const result=await api.aiSetKey({key,provider,options:{baseURL:$('#ai-base-url').value,model:$('#ai-model').value}});
+  $('#ai-key').value='';
+  if(result.error)return showToast('Não foi possível salvar a chave.');
+  $('#ai-test-result').textContent='Chave salva. Teste a conexão.';
+  await renderAiState();
 });
 $('#ai-test').addEventListener('click',async()=>{
-  const button=$('#ai-test');
-  button.disabled=true;$('#ai-test-result').textContent='Testing…';
-  const result=await api.aiTest();
-  button.disabled=false;
-  $('#ai-test-result').textContent=result.ok?'Provider answered. You are set.':aiError(result.error,result.detail);
+  const button=$('#ai-test');button.disabled=true;$('#ai-test-result').textContent='Testando conexão…';
+  const result=await api.aiTest();button.disabled=false;
+  $('#ai-test-result').textContent=result.ok?'Conexão funcionando.':aiError(result.error,result.detail);
 });
 $('#ai-key-clear').addEventListener('click',async()=>{
-  await api.aiClearKey();
-  $('#ai-test-result').textContent='Key removed.';
-  renderAiState();
+  await api.aiClearKey($('#ai-provider').value);
+  $('#ai-test-result').textContent='Chave removida.';await renderAiState();
 });
 
 function renderAutomations() {

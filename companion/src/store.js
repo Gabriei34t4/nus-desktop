@@ -72,13 +72,13 @@ const DEFAULTS = {
   // it off from the desktop Knot pane is the only thing that removes it, and
   // that choice persists until the user turns it back on.
   companionEnabled: true,
-  apiKeys: { openai: '', anthropic: '', gemini: '', nvidia: '' },
+  apiKeys: { gemini: '', nvidia: '', freellmapi: '' },
+  baseURL: 'http://localhost:3001/v1',
   models: {
-    openai: { fast: 'gpt-4o-mini', smart: 'gpt-4o' },
-    anthropic: { fast: 'claude-haiku-4-5', smart: 'claude-sonnet-5' },
+    freellmapi: { fast: 'auto', smart: 'auto' },
     // 2026-09-15: gemini-2.5-* returns 404 "no longer available to new users".
     gemini: { fast: 'gemini-3.6-flash', smart: 'gemini-3.6-pro' },
-    nvidia: { fast: 'meta/llama-3.2-11b-vision-instruct', smart: 'meta/llama-3.2-90b-vision-instruct' }
+    nvidia: { fast: 'meta/llama-3.3-70b-instruct', smart: 'meta/llama-3.3-70b-instruct' }
   }
 };
 
@@ -203,7 +203,7 @@ function load() {
 
   // Auto-switch provider if the current one has no key, but another one does.
   if (!data.apiKeys[data.provider]) {
-    const validProviders = ['openai', 'anthropic', 'gemini', 'nvidia'];
+    const validProviders = ['gemini', 'nvidia', 'freellmapi'];
     const active = validProviders.find(p => data.apiKeys[p]);
     if (active) {
       data.provider = active;

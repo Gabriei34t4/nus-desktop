@@ -593,10 +593,10 @@
 
   function fillSettings() {
     document.querySelectorAll('#provider-seg button').forEach((b) => b.classList.toggle('on', b.dataset.provider === settings.provider));
-    $('#key-openai').value = settings.apiKeys.openai || '';
-    $('#key-anthropic').value = settings.apiKeys.anthropic || '';
     $('#key-gemini').value = settings.apiKeys.gemini || '';
     $('#key-nvidia').value = settings.apiKeys.nvidia || '';
+    $('#key-freellmapi').value = settings.apiKeys.freellmapi || '';
+    $('#freellmapi-base-url').value = settings.baseURL || 'http://localhost:3001/v1';
     $('#resume-context').value = settings.resumeContext || '';
     $('#pack-path').value = settings.packPath || '';
     $('#spar-path').value = settings.sparPath || '';
@@ -664,8 +664,8 @@
   });
   function statusText() {
     const k = settings.apiKeys;
-    const has = [k.openai && 'OpenAI', k.anthropic && 'Anthropic', k.gemini && 'Gemini', k.nvidia && 'Nvidia'].filter(Boolean);
-    const stt = k.openai ? 'Whisper' : (k.gemini ? 'Gemini' : 'none');
+    const has = [k.gemini && 'Google AI Studio', k.nvidia && 'NVIDIA', k.freellmapi && 'FreeLLMAPI'].filter(Boolean);
+    const stt = k.gemini ? 'Google AI Studio' : 'none';
     const base = 'Active: ' + settings.provider + ' · keys: ' + (has.join(', ') || 'none set') + ' · transcription: ' + stt;
     return (settings._migrationNote && !has.length) ? settings._migrationNote + '\n' + base : base;
   }
@@ -677,10 +677,10 @@
     $('#s-status').textContent = statusText();
   }));
   async function saveSettings() {
-    settings.apiKeys.openai = $('#key-openai').value.trim();
-    settings.apiKeys.anthropic = $('#key-anthropic').value.trim();
     settings.apiKeys.gemini = $('#key-gemini').value.trim();
     settings.apiKeys.nvidia = $('#key-nvidia').value.trim();
+    settings.apiKeys.freellmapi = $('#key-freellmapi').value.trim();
+    settings.baseURL = $('#freellmapi-base-url').value.trim() || 'http://localhost:3001/v1';
     settings.resumeContext = $('#resume-context').value.trim();
     settings.packPath = $('#pack-path').value.trim();
     settings.sparPath = $('#spar-path').value.trim();
@@ -1219,8 +1219,8 @@ function createPreviewBridge() {
   document.documentElement.classList.add('preview-mode');
   const listeners = new Map();
   const settings = {
-    provider: 'gemini', apiKeys: { openai: '', anthropic: '', gemini: '', nvidia: '' },
-    models: { gemini: { fast: 'gemini-3.6-flash', smart: 'gemini-3.6-pro' } },
+    provider: 'gemini', apiKeys: { gemini: '', nvidia: '', freellmapi: '' },
+    models: { gemini: { fast: 'gemini-2.5-flash', smart: 'gemini-2.5-pro' }, nvidia: { fast: 'meta/llama-3.3-70b-instruct', smart: 'meta/llama-3.3-70b-instruct' }, freellmapi: { fast: 'auto', smart: 'auto' } },
     shortcuts: { assist: 'CommandOrControl+Return' }, smart: false, onboarded: true,
     resumeContext: '', packPath: '', sparPath: '', speakReplies: false, shareNusContextWithProvider: false,
     _founderTools: false,

@@ -1176,12 +1176,13 @@ const handlers = {
     return result;
   },
   'ai:status': async () => ai.status(),
-  'ai:set-key': (_event, value) => {
-    const result = ai.setApiKey(value);
-    if (result && result.ok) trackEvent('key_connected', { provider: 'anthropic' });
+  'ai:set-key': (_event, payload) => {
+    const data = payload && typeof payload === 'object' ? payload : { key: payload };
+    const result = ai.setApiKey(data.key, data.provider, data.options || data);
+    if (result && result.ok) trackEvent('key_connected', { provider: result.provider || 'gemini' });
     return result;
   },
-  'ai:clear-key': () => ai.clearApiKey(),
+  'ai:clear-key': (_event, provider) => ai.clearApiKey(provider),
   'ai:test': async () => ai.testConnection(),
   'syllabus:import': async (_event, filePath) => {
     const allowed = usageLimits.syllabusAllowed(null);
@@ -1277,7 +1278,7 @@ const handlers = {
   // has to find the overlay's gear icon to get the overlay working.
   'companion:ai:status': () => {
     const s = require('../companion/src/store').getSettings();
-    return { provider: s.provider, keys: Object.fromEntries(['gemini', 'openai', 'anthropic', 'nvidia'].map((p) => [p, Boolean(s.apiKeys && s.apiKeys[p])])) };
+    return { provider: s.provider, keys: Object.fromEntries(['gemini', 'nvidia', 'freellmapi'].map((p) => [p, Boolean(s.apiKeys && s.apiKeys[p])])) };
   },
   'companion:ai:set-key': (_event, payload) => {
     const companionStore = require('../companion/src/store');

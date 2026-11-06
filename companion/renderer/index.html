@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:;" />
@@ -153,15 +153,15 @@
   <div id="settings-scrim" class="hidden">
     <div id="settings" class="glass">
       <div class="s-head">
-        <div class="s-title">Settings</div>
-        <button id="s-close" class="s-close">Done</button>
+        <div class="s-title">Configurações</div>
+        <button id="s-close" class="s-close">Concluir</button>
       </div>
       <div class="s-body">
         <div id="nus-link-status" class="nus-link-status">Checking Nūs desktop context…</div>
 
-        <label class="s-label">Gemini API key <span class="s-hint">free at aistudio.google.com/apikey · stored locally and encrypted</span></label>
-        <p class="s-note">Only needed for AI answers and listening: <b>"What should I do?" works with no key at all</b>, straight from your semester. One free Gemini key covers both answers and speech-to-text. Also settable in the desktop app under Settings, Companion AI key.</p>
-        <div class="s-field"><span>Gemini</span><input id="key-gemini" type="password" placeholder="AIza..." autocomplete="off" /></div>
+        <label class="s-label">Chave de API <span class="s-hint">Google AI Studio, NVIDIA ou FreeLLMAPI</span></label>
+        <p class="s-note">Escolha um provedor e informe sua chave. As credenciais ficam criptografadas neste computador.</p>
+        <div class="s-field"><span>Google AI Studio</span><input id="key-gemini" type="password" placeholder="Chave do Google AI Studio" autocomplete="off" /></div>
         <div class="s-field nus-share-field"><span>Smart answers <small>Off by default. On: every reply uses the slower, stronger model.</small></span><input id="smart-mode" type="checkbox" /></div>
 
         <label class="s-label">Ask shortcut <span class="s-hint">runs "What should I do?" from anywhere</span></label>
@@ -173,16 +173,15 @@
         <div class="shortcut-hint" id="shortcut-hint">Click the shortcut, then press a new key combination.</div>
 
         <details class="s-more">
-          <summary>Use a different provider</summary>
+          <summary>Provedor de IA</summary>
           <div class="s-seg" id="provider-seg">
-            <button data-provider="gemini">Gemini</button>
-            <button data-provider="openai">OpenAI</button>
-            <button data-provider="anthropic">Anthropic</button>
-            <button data-provider="nvidia">Nvidia</button>
+            <button data-provider="gemini">Google AI Studio</button>
+            <button data-provider="nvidia">NVIDIA</button>
+            <button data-provider="freellmapi">FreeLLMAPI</button>
           </div>
-          <div class="s-field"><span>OpenAI</span><input id="key-openai" type="password" placeholder="sk-..." autocomplete="off" /></div>
-          <div class="s-field"><span>Anthropic</span><input id="key-anthropic" type="password" placeholder="sk-ant-..." autocomplete="off" /></div>
-          <div class="s-field"><span>Nvidia</span><input id="key-nvidia" type="password" placeholder="nvapi-..." autocomplete="off" /></div>
+          <div class="s-field"><span>NVIDIA</span><input id="key-nvidia" type="password" placeholder="Chave NVIDIA" autocomplete="off" /></div>
+          <div class="s-field"><span>FreeLLMAPI</span><input id="key-freellmapi" type="password" placeholder="Chave FreeLLMAPI" autocomplete="off" /></div>
+          <div class="s-field"><span>Endereço da API FreeLLMAPI</span><input id="freellmapi-base-url" type="text" value="http://localhost:3001/v1" autocomplete="off" /></div>
           <label class="s-label">Models <span class="s-hint">fast = Smart off · smart = Smart on</span></label>
           <div class="s-field"><span>Fast</span><input id="model-fast" type="text" autocomplete="off" /></div>
           <div class="s-field"><span>Smart</span><input id="model-smart" type="text" autocomplete="off" /></div>
