@@ -1,35 +1,18 @@
 # Nūs Desktop
 
-The semester organizer that runs on your own AI, on your own machine. Import a
-real syllabus, see your whole semester as a living map, and let Nūs propose the
-next move. Nothing is saved without your review, and your coursework never
-leaves your computer except through the calls you configure below (see
-[Privacy](#privacy) for the anonymous usage stats and how to turn them off).
+Organizador de semestre que funciona com provedores de IA configurados por você. Importe um plano de ensino, visualize o semestre e organize as próximas tarefas. Os dados ficam no computador, exceto pelo conteúdo enviado ao provedor que você escolher.
 
-## You bring the AI (required)
+## Provedores de IA
 
-Nūs has no server and no bundled model. It needs two keys, and they do
-different jobs:
+O aplicativo principal e o Companion permitem escolher entre três provedores:
 
-**1. Claude, for the desktop app.** Reading syllabi, the Ask bar, and the chat
-thread all run on Anthropic's Claude, pinned to the mid-tier **Sonnet** model
-so a semester of use stays affordable.
-- If **Claude Code** is installed on your machine, Nūs finds it automatically
-  and uses your existing subscription. Nothing to paste.
-- Otherwise, get an **Anthropic API key** (console.anthropic.com) and paste it
-  in **Settings → AI provider**. It is encrypted on this device with your OS
-  keychain and only ever used to call Anthropic.
+- **Google AI Studio** — crie uma chave em https://aistudio.google.com/apikey. Também pode ser usado como alternativa para transcrição de voz.
+- **NVIDIA** — crie uma chave em https://build.nvidia.com/ e use um modelo disponível para sua conta.
+- **FreeLLMAPI** — execute o serviço local e use a chave unificada criada no painel. O endereço padrão é `http://localhost:3001/v1`. Consulte https://github.com/lov0u/freellmapi para instalar e iniciar o serviço.
 
-**2. Gemini, for the Companion overlay.** The floating Knot that watches your
-screen and listens in meetings runs on its own key so live answers stay fast
-and cheap. Get a free **Google Gemini** key (aistudio.google.com/apikey) and
-paste it in **Settings → Companion AI key**, or in the Knot's own gear icon.
-The Gemini key covers the Companion's answers. Speech to text needs no key at
-all: Nūs transcribes on your own machine with whisper.cpp (see **Voice** below)
-and only falls back to a Gemini or OpenAI key if the local engine is missing.
-(OpenAI, Anthropic, and Nvidia keys also work for answering.)
+Abra **Configurações → Provedor de IA** para configurar o provedor do aplicativo principal. O cartão **Provedor de IA do Companion** configura o assistente flutuante separadamente. Cada um pode usar um provedor diferente. As chaves são armazenadas com a criptografia do sistema operacional.
 
-The first-run walkthrough points at both cards.
+A transcrição de voz local usa whisper.cpp quando o mecanismo está instalado. A transcrição em nuvem depende do Google AI Studio; NVIDIA e FreeLLMAPI são usados para respostas de texto e visão conforme o modelo escolhido.
 
 ## Install and run
 

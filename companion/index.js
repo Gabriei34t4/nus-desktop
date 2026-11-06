@@ -116,7 +116,7 @@ const APP_GUIDE = 'APP GUIDE (answer questions about Nus from this, not from the
   'Talking to Nus: a full chat thread lives in the desktop app under Knot > Companion. It answers questions and can create tasks, move due dates, and draft emails, each with a Confirm step before anything is written. The Ask bar on the Today tab takes one-shot requests from anywhere. ' +
   'Email has its own tab in the rail. Gmail needs no connection at all: open the Email tab, add the address you send from under "Gmail and your addresses", fill the professor email form, press "Draft email", then press "Open in Gmail" and the finished draft opens in a Gmail compose window signed in as that address, where the student presses send. Outlook is a separate optional connection and is read-only until they opt in to sending. ' +
   'Map = rail item 02 (drag the canvas, scroll to zoom). Syllabus import = the Import button, always reviewed before saving. My capture sessions = Knot > History, uploadable to the vault. Automations and Integrations = the Connections tab. ' +
-  'Keys, two of them and they are different: the DESKTOP app uses Claude, either Claude Code if it is installed or an Anthropic API key pasted in desktop Settings > AI provider. I, the Companion, use my OWN key, normally a free Google Gemini key from aistudio.google.com/apikey, pasted either in desktop Settings > "Companion AI key" (the card directly below the AI provider one) or through my gear icon in this command sheet. One Gemini key covers both my answers and speech-to-text for listening. The GPA scale for semester setup is in desktop Settings, the Data section. ' +
+  'Configure o provedor de IA do aplicativo principal e o provedor do Companion nas Configurações. Ambos aceitam Google AI Studio, NVIDIA e FreeLLMAPI. O Google AI Studio também pode ser usado para transcrição de voz. As chaves ficam criptografadas neste computador. A escala de notas fica na seção Dados das Configurações. ' +
   `Hotkeys: ${HOTKEY_MOD}+Shift+Space hides or shows me, ${HOTKEY_MOD}+Shift+X stops listening and vanishes. I keep running after the dashboard closes and the hotkeys keep working. "Turn off Companion" on the Knot > Companion pane removes me completely and releases the hotkeys until turned back on there.`;
 
 // -------- window --------
@@ -252,7 +252,7 @@ async function flushChannel(channel) {
     const settings = store.getSettings();
     const stt = createSTT(settings);
     if (!stt.available) {
-      if (!sttDisabled) { sttDisabled = true; send('status', { message: 'No transcription available. Run voice setup in the desktop app (Today tab mic) for free local transcription, or add an OpenAI (Whisper) or Gemini key in Settings. Screen/LeetCode features work without it.' }); }
+      if (!sttDisabled) { sttDisabled = true; send('status', { message: 'Sem transcrição disponível. Configure a transcrição local no microfone da tela Hoje ou adicione uma chave do Google AI Studio nas Configurações. Os recursos de tela continuam funcionando sem isso.' }); }
       return;
     }
     const res = await stt.transcribe(pcm);
@@ -297,7 +297,7 @@ function handleSttError(err) {
   const noAccess = err.status === 403 || err.status === 401 || err.code === 'model_not_found';
   sttDisabled = true;
   if (noAccess) {
-    send('status', { message: 'Transcription off: your ' + err.provider + ' key has no access to a speech-to-text model (' + (err.status || err.code) + '). Screen features still work. To enable listening: give the key transcription access, or add a Gemini key in Settings and reopen.' });
+    send('status', { message: 'Transcription off: your ' + err.provider + ' key has no access to a speech-to-text model (' + (err.status || err.code) + '). Screen features still work. Para ativar a escuta, use uma chave do Google AI Studio nas Configurações e abra novamente.' });
   } else {
     send('status', { message: 'Transcription error (' + err.provider + '): ' + err.message });
   }
@@ -1008,7 +1008,7 @@ function guideLlm() {
   if (own.ready && !FORCE_CLAUDE_GUIDE) return own;
   return {
     ready: true,
-    provider: 'claude (desktop)',
+    provider: 'Nūs desktop',
     model: 'desktop',
     async complete({ system, turns, imageDataUrl }) {
       const ask = turns[turns.length - 1] ? turns[turns.length - 1].text : '';
@@ -1016,7 +1016,7 @@ function guideLlm() {
       const r = await hooks.desktopComplete(prompt, imageDataUrl || null);
       if (!r || r.error) {
         const code = r && r.error;
-        if (code === 'no_ai') throw new Error('no AI is set up. Paste a free Gemini key in the Companion settings, or sign in to Claude Code');
+        if (code === 'no_ai') throw new Error('nenhum provedor de IA está configurado. Adicione uma chave nas Configurações do Companion');
         throw new Error(code + (r && r.detail ? ': ' + r.detail : ''));
       }
       return r.text || '';
@@ -1200,7 +1200,7 @@ async function pttStop(reason) {
   if (pcm.length < PTT_MIN_BYTES || rms16(pcm) < RMS_GATE) { flash('I did not catch that. Hold the key and speak.', 3000); restoreKnotState(); return; }
   const settings = store.getSettings();
   const stt = createSTT(settings);
-  if (!stt.available) { flash('No transcription yet. Run voice setup in the desktop app, or add a Gemini key.', 5000); restoreKnotState(); return; }
+  if (!stt.available) { flash('Ainda não há transcrição. Configure a voz local no aplicativo ou adicione uma chave do Google AI Studio.', 5000); restoreKnotState(); return; }
   let res = null;
   const t0 = Date.now();
   try { res = await stt.transcribe(pcm); } catch (e) { res = { text: '', error: { message: e.message } }; }

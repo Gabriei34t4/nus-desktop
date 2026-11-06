@@ -1220,7 +1220,7 @@ function createPreviewBridge() {
   const listeners = new Map();
   const settings = {
     provider: 'gemini', apiKeys: { gemini: '', nvidia: '', freellmapi: '' },
-    models: { gemini: { fast: 'gemini-2.5-flash', smart: 'gemini-2.5-pro' }, nvidia: { fast: 'meta/llama-3.3-70b-instruct', smart: 'meta/llama-3.3-70b-instruct' }, freellmapi: { fast: 'auto', smart: 'auto' } },
+    models: { gemini: { fast: 'gemini-3.8-flash', smart: 'gemini-3.8-flash' }, nvidia: { fast: 'meta/llama-3.2-11b-vision-instruct', smart: 'meta/llama-3.2-11b-vision-instruct' }, freellmapi: { fast: 'auto:fast', smart: 'auto:smart' } },
     shortcuts: { assist: 'CommandOrControl+Return' }, smart: false, onboarded: true,
     resumeContext: '', packPath: '', sparPath: '', speakReplies: false, shareNusContextWithProvider: false,
     _founderTools: false,

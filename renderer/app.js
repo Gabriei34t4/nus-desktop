@@ -624,7 +624,7 @@ async function renderAiState(){
   badge.classList.toggle('good',!!status.apiKey);
 }
 $('#ai-provider').addEventListener('change',async()=>{
-  await api.aiSetKey({provider:$('#ai-provider').value,options:{baseURL:$('#ai-base-url').value,model:$('#ai-model').value}});
+  await api.aiSetKey({provider:$('#ai-provider').value,options:{baseURL:$('#ai-base-url').value}});
   await renderAiState();
 });
 $('#ai-key-save').addEventListener('click',async()=>{

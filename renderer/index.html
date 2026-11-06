@@ -331,15 +331,17 @@
             </section>
             <section class="setting-card" id="companion-ai-card">
               <div>
-                <div class="section-kicker">Companion AI key</div>
-                <h3 id="companion-ai-title">Screen guidance can use desktop Claude</h3>
-                <p id="companion-ai-copy">Screen guidance can use your desktop Claude connection when no Companion key is set. A Gemini key enables the Companion provider and cloud speech fallback. Keys are encrypted on this device. For keyless voice, click Talk on the Knot and complete local voice setup.</p>
+                <div class="section-kicker">Provedor de IA do Companion</div>
+                <h3 id="companion-ai-title">Configure a IA do Companion</h3>
+                <p id="companion-ai-copy">Escolha Google AI Studio, NVIDIA ou FreeLLMAPI. A chave fica criptografada neste computador.</p>
                 <div class="auth-form">
-                  <label class="field"><span>Gemini API key</span><input id="companion-ai-key" type="password" placeholder="AIza…" autocomplete="off" /></label>
-                  <div class="sheet-actions"><span id="companion-ai-result"></span><div><button id="companion-ai-save" class="primary-button" type="button">Save key</button><button id="companion-ai-clear" class="quiet-button hidden" type="button">Remove key</button></div></div>
+                  <label class="field"><span>Provedor</span><select id="companion-ai-provider"><option value="gemini">Google AI Studio</option><option value="nvidia">NVIDIA</option><option value="freellmapi">FreeLLMAPI</option></select></label>
+                  <label class="field"><span>Chave de API</span><input id="companion-ai-key" type="password" placeholder="Cole sua chave" autocomplete="off" /></label>
+                  <label class="field" id="companion-ai-url-field"><span>Endereço FreeLLMAPI</span><input id="companion-ai-base-url" type="text" value="http://localhost:3001/v1" autocomplete="off" /></label>
+                  <div class="sheet-actions"><span id="companion-ai-result"></span><div><button id="companion-ai-save" class="primary-button" type="button">Salvar chave</button><button id="companion-ai-clear" class="quiet-button hidden" type="button">Remover chave</button></div></div>
                 </div>
               </div>
-              <span id="companion-ai-badge" class="status-badge">Checking</span>
+              <span id="companion-ai-badge" class="status-badge">Verificando</span>
             </section>
             <section class="setting-card"><div><div class="section-kicker">Walkthrough</div><h3>Replay the tour</h3><p>Step through Nūs again with the Companion narrating alongside. Nothing you have imported is touched.</p><div class="sheet-actions"><span></span><button id="replay-tour" class="quiet-button" type="button">Replay the walkthrough</button></div></div><span class="status-badge">Anytime</span></section>
             <section class="setting-card" id="gpa-scale-card">
@@ -431,5 +433,6 @@
   <div id="toast" class="toast" role="status"></div>
   <script src="../companion/renderer/knot3d.js?v=atlas-14"></script>
   <script src="app.js?v=atlas-12"></script>
+  <script src="pt-BR.js"></script>
 </body>
 </html>

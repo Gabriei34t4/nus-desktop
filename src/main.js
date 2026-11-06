@@ -1282,10 +1282,12 @@ const handlers = {
   },
   'companion:ai:set-key': (_event, payload) => {
     const companionStore = require('../companion/src/store');
-    const provider = ['gemini', 'openai', 'anthropic', 'nvidia'].includes(payload?.provider) ? payload.provider : 'gemini';
+    const provider = ['gemini', 'nvidia', 'freellmapi'].includes(payload?.provider) ? payload.provider : 'gemini';
     const key = String(payload?.key || '').trim();
-    if (!key) return { error: 'empty_key' };
-    companionStore.setSettings({ apiKeys: { [provider]: key }, provider });
+    const patch = { provider };
+    if (key) patch.apiKeys = { [provider]: key };
+    if (provider === 'freellmapi' && payload?.baseURL) patch.baseURL = String(payload.baseURL).trim().replace(/\/+$/, '');
+    companionStore.setSettings(patch);
     trackEvent('key_connected', { provider });
     return { ok: true, provider };
   },

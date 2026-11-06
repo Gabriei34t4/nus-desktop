@@ -201,14 +201,12 @@ function load() {
     if (found) { data.packPath = found.pack; data.sparPath = found.spar; }
   }
 
-  // Auto-switch provider if the current one has no key, but another one does.
+  // Migrate legacy OpenAI/Anthropic selections to one of the supported providers.
+  const validProviders = ['gemini', 'nvidia', 'freellmapi'];
+  if (!validProviders.includes(data.provider)) data.provider = validProviders.find(p => data.apiKeys[p]) || 'gemini';
   if (!data.apiKeys[data.provider]) {
-    const validProviders = ['gemini', 'nvidia', 'freellmapi'];
     const active = validProviders.find(p => data.apiKeys[p]);
-    if (active) {
-      data.provider = active;
-      // We don't save() here so we don't spam disk, it will persist on next save.
-    }
+    if (active) data.provider = active;
   }
 
   const retired = retireDeadModels(data);
