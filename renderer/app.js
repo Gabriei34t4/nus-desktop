@@ -638,6 +638,7 @@ $('#ai-key-save').addEventListener('click',async()=>{
 });
 $('#ai-test').addEventListener('click',async()=>{
   const button=$('#ai-test');button.disabled=true;$('#ai-test-result').textContent='Testando conexão…';
+  await api.aiSetKey({provider:$('#ai-provider').value,options:{baseURL:$('#ai-base-url').value,model:$('#ai-model').value}});
   const result=await api.aiTest();button.disabled=false;
   $('#ai-test-result').textContent=result.ok?'Conexão funcionando.':aiError(result.error,result.detail);
 });
